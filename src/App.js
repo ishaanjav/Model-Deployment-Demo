@@ -4,7 +4,7 @@ import { useState } from 'react';
 function App() {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState('/modal_labs.jpeg');
+  const [videoUrl, setVideoUrl] = useState(null);
 
   const handleSubmit = async () => {
     if (!inputText.trim()) {
@@ -14,10 +14,26 @@ function App() {
 
     setIsLoading(true);
     try {
+      const response = await fetch(
+        `https://ishaanjav--example-text-to-image-inference-web-dev.modal.run?prompt=${encodeURIComponent(inputText)}`,
+        {
+          method: 'GET',
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Convert the response to a blob
+      const videoBlob = await response.blob();
+      // Create a URL for the blob
+      const videoObjectUrl = URL.createObjectURL(videoBlob);
+      // Update the video source
+      setVideoUrl(videoObjectUrl);
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred while generating the image');
+      alert('An error occurred while generating the video');
     } finally {
       setIsLoading(false);
     }
@@ -26,7 +42,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Image Generation</h1>
+        <h1>Video Generation</h1>
         <div className="input-container">
           <input
             type="text"
@@ -43,12 +59,19 @@ function App() {
             {isLoading ? 'Generating...' : 'Submit'}
           </button>
         </div>
-        <div className="image-container">
-          <img
-            src={imageUrl}
-            alt="Generated"
-            className="generated-image"
-          />
+        <div className="video-container">
+          {videoUrl ? (
+            <video
+              controls
+              className="generated-video"
+              style={{ maxWidth: '100%', maxHeight: '500px' }}
+            >
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <p>Generated video will appear here</p>
+          )}
         </div>
       </header>
     </div>
