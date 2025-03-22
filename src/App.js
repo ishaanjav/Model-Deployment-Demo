@@ -15,7 +15,7 @@ function App() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://ishaanjav--example-text-to-image-inference-web-dev.modal.run?prompt=${encodeURIComponent(inputText)}`,
+        `<YOUR MODAL ENDPOINT HERE>?prompt=${encodeURIComponent(inputText)}`,
         {
           method: 'GET',
         }
